@@ -15,29 +15,29 @@ const AppNavigator = () => {
       <stack.Navigator initialRouteName='Splash'>
         <stack.Screen
           name='Splash' component={Splash} options={{
-                                            headerShown: false
-                                            }}
+            headerShown: false
+          }}
         ></stack.Screen>
         <stack.Screen
           name='LoginScreen' component={LoginScreen} options={{
-                                            headerShown: false
-                                            }}
+            headerShown: false
+          }}
         ></stack.Screen>
         <stack.Screen
           name='SignupScreen' component={SignupScreen} options={{
-                                            headerShown: false
-                                            }}
+            headerShown: false
+          }}
         ></stack.Screen>
         <stack.Screen
           name='HomeScreen' component={HomeScreen} options={{
-                                            headerShown: true,
-                                            title:'Your Contacts'
-                                            }}
+            headerShown: true,
+            title: 'Your Contacts'
+          }}
         ></stack.Screen>
         <stack.Screen
           name='Picker' component={Picker} options={{
-                                            headerShown: true
-                                            }}
+            headerShown: true
+          }}
         ></stack.Screen>
       </stack.Navigator>
     </NavigationContainer>

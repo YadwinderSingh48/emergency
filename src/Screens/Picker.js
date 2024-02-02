@@ -23,7 +23,7 @@ const Picker = () => {
       const iosStatus = await request(PERMISSIONS.IOS.CONTACTS);
 
       if (androidStatus === 'granted' || iosStatus === 'granted') {
-        console.log('Contacts permission granted');
+        //console.log('Contacts permission granted');
         // Now you can fetch and display contacts
         fetchContacts();
       } else {
@@ -40,20 +40,20 @@ const Picker = () => {
         const contactsWithSelection = allContacts.map(item => ({ ...item, isSelected: false }));
 
         setContacts(contactsWithSelection);
-        console.log(contacts);
+       // console.log(contacts);
       })
       .catch((error) => console.error('Error fetching contacts:', error));
   };
   // function for handle click on the list
   const handleClick = (getNumber) => {
     const updatedContacts = contacts.map(contact =>
-      contact.phoneNumbers[0].number === getNumber ? { ...contact, isSelected: !contact.isSelected } : contact
+      contact.phoneNumbers[0]?.number === getNumber ? { ...contact, isSelected: !contact.isSelected } : contact
     );
 
     setContacts(updatedContacts);
     const tickContacts = updatedContacts.filter((c => c.isSelected));
     setSelectedContacts(tickContacts);
-    console.log(tickContacts.length);
+    //console.log(tickContacts.length);
   }
 
   // change title of screen
@@ -68,14 +68,14 @@ const Picker = () => {
       <FlatList data={contacts}
         renderItem={({ item, index }) => {
           return (
-            <TouchableOpacity onPress={() => handleClick(item.phoneNumbers[0].number)}>
+            <TouchableOpacity onPress={() => handleClick(item.phoneNumbers[0]?.number)}>
               <View style={[styles.list, item.isSelected && styles.selected]}>
                 <View style={styles.imageView}>
                   <Image source={require('../assets/icons/profile.png')} style={styles.img}></Image>
                 </View>
                 <View style={styles.contactInfo}>
                   <Text>{item.displayName}</Text>
-                  <Text>{item.phoneNumbers[0].number}</Text>
+                  <Text>{item.phoneNumbers[0]?.number}</Text>
                 </View>
                 <View style={styles.checkBox}>
                   {item.isSelected && (

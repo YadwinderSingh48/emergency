@@ -29,7 +29,7 @@ const Splash = () => {
         }
       }
       else{
-        navigation.navigate('LoginScreen');
+        navigation.replace('LoginScreen');
       }
     }
   return (
