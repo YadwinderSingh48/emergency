@@ -1,12 +1,14 @@
 import { Alert, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomTextInput from '../components/CustomTextInput'
 import CustomButton from '../components/CustomButton'
 import { useNavigation } from '@react-navigation/native'
 import Snackbar from 'react-native-snackbar';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import GetToken from '../components/GetToken'
 const LoginScreen = () => {
+ 
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [badDetails, setBadDetails] = useState('');
@@ -54,6 +56,7 @@ const LoginScreen = () => {
     }
 
   }
+  // const test = async ()=>{ console.log(await AsyncStorage.getItem('TOKEN'))}
   return (
     <View style={styles.container}>
 
@@ -62,6 +65,7 @@ const LoginScreen = () => {
       <CustomTextInput placeholder={'Email'} icon={require('../assets/icons/mail.png')} value={email} onChangeText={txt => { setEmail(txt) }} keyboardType={'email-address'} ></CustomTextInput>
       <CustomTextInput placeholder={'Password'} icon={require('../assets/icons/key.png')} type={'password'} value={password} onChangeText={txt => { setPassword(txt) }}></CustomTextInput>
       <CustomButton title={'Login'} bgColor={'black'} textColor={'white'} onPress={() => { validation() }} ></CustomButton>
+      {/* <CustomButton title={'Just test'} bgColor={'black'} textColor={'white'} onPress={() => { setA(a+1); console.log(a) }} ></CustomButton> */}
       <Text style={styles.signUp} onPress={() => { navigation.navigate('SignupScreen') }}> create new account?</Text>
     </View>
   )
