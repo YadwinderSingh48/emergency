@@ -154,9 +154,7 @@ const HomeScreen = ({ navigation, route }) => {
         <Button title='Add Contacts' style={styles.btn} onPress={() => {
           navigation.navigate('Picker')
         }} />
-        <Button title='Test' style={styles.btn} onPress={() => {
-         getContacts()
-        }} />
+      
       </View>
       {isLoading && (
         <View style={styles.overlay}>
