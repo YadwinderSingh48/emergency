@@ -3,18 +3,68 @@ import { React, useEffect, useState } from 'react'
 import { FlatList } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { request, PERMISSIONS } from 'react-native-permissions';
+import  Geolocation from 'react-native-geolocation-service';
 const HomeScreen = ({ navigation, route }) => {
-  
   // handle and store get data from contact picker screen
   const [contacts, setContacts] = useState([]);
   const [isLoading,setIsLoading] = useState(false);
+  
   useEffect(() => {
+    requestPermission();
     getContacts();
     if(route.params=='refresh'){
       getContacts();
       
     }
     }, [route.params]);
+    const requestPermission = async ()=>{
+      try {
+        // Request permission for both Android and iOS
+        const androidStatus = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
+        const iosStatus = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+  
+        if (androidStatus === 'granted' || iosStatus === 'granted') {
+          console.log('Location permission granted');
+          // Now you can fetch and display contacts
+        } else {
+          console.log('Location permission denied');
+          Alert.alert('Permission Required', 'Please allow Location to continue');
+        
+        }
+      } catch (error) {
+        console.error('Error requesting location permission:', error);
+      }
+    }
+
+    const getCurrentLocation = async () => {
+      
+        try {
+          setIsLoading(true);
+          // Grab that location with some preferences
+          Geolocation.getCurrentPosition(
+            (position) => {
+              console.log(position);
+             Alert.alert('Location', `Lattiude: ${position.coords.latitude} \nLongitude: ${position.coords.longitude}`)
+             setIsLoading(false);
+            },
+            (error) => {
+              // See error code charts below.
+              console.log(error.code, error.message);
+              Alert.alert("Error", error);
+              setIsLoading(false);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+        } catch (err) {
+          // Handle any location retrieval errors like a pro
+          console.error(err);
+          Alert.alert("Catch Errors",err)
+          setIsLoading(false);
+        }
+       
+    };
+  
    // fetch new token
    const fetchtoken = async ()=>{
     try {
@@ -77,12 +127,14 @@ const HomeScreen = ({ navigation, route }) => {
               'Authorization': `Bearer ${authToken}` 
             };
             const data = JSON.parse(accountId);
+            // console.log(authToken)
             
              const response = await fetch(apiUrl,{
                 method:'POST',
                 headers: headers,
                 body: JSON.stringify({"accId":data})
               });
+             // console.log(await response.text());
               if(response.ok){
                 const getresponse = await response.text();
                // console.log(getresponse);
@@ -129,7 +181,7 @@ const HomeScreen = ({ navigation, route }) => {
         renderItem={({ item, index }) => {
           return (
 
-            <View style={[styles.list]}>
+            <TouchableOpacity style={[styles.list]} onPress={()=>{getCurrentLocation();}} >
               <View style={styles.imageView}>
                 <Image source={require('../assets/icons/profile.png')} style={styles.img}></Image>
               </View>
@@ -142,7 +194,7 @@ const HomeScreen = ({ navigation, route }) => {
                   <Image source={require('../assets/icons/checkmark.png')} style={styles.tick}></Image>
                 )}
               </View>
-            </View>
+            </TouchableOpacity>
 
 
 
@@ -154,6 +206,9 @@ const HomeScreen = ({ navigation, route }) => {
         <Button title='Add Contacts' style={styles.btn} onPress={() => {
           navigation.navigate('Picker')
         }} />
+        {/* <Button title='Location' style={styles.btn} onPress={() => {
+          getCurrentLocation();
+        }} /> */}
       
       </View>
       {isLoading && (

@@ -111,7 +111,7 @@ const SignupScreen = () => {
     setIsLoading(true);
     try {
       //get the saved token 
-    const authToken = await AsyncStorage.getItem('TOKEN');
+      const authToken = await AsyncStorage.getItem('TOKEN');
       const apiUrl = 'https://react-dev-ed.develop.my.salesforce.com/services/apexrest/Account'
       const headers = {
         'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ const SignupScreen = () => {
         if(response.ok){
           const getresponse = await response.text();
           console.log(getresponse);
-        
+        if(getresponse !=null && getresponse != '' && getresponse != undefined){
         await AsyncStorage.setItem('NAME', name);
         await AsyncStorage.setItem('EMAIL', email);
         await AsyncStorage.setItem('PHONE', phone);
@@ -140,11 +140,15 @@ const SignupScreen = () => {
         setIsLoading(false);
         Alert.alert('Success','Account Created Successfully! Please login to continue');
         navigation.goBack();
+        } else{
+          Alert.alert('Email Error', 'Email is already registered. Try Another Email..')
+          setIsLoading(false);
         }
+      }
         else if(response.status === 401){
           console.log('here')
              const newToken = await fetchtoken();
-              console.log(newToken);
+             // console.log(newToken);
               if(newToken !='' && newToken !=undefined && newToken != null){
               return saveData();
               }
