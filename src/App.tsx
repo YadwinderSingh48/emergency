@@ -1,9 +1,16 @@
 // App.js
 import React from 'react';
-import AppNavigator from './Screens/AppNavigator';
-
+import AppNavigator, { TabNavigator } from './Screens/AppNavigator';
+import { NavigationContainer } from '@react-navigation/native';
+import { LocationProvider } from './components/LocationContext'; 
 const App = () => {
-  return <AppNavigator />;
+  return (
+   <LocationProvider>
+
+      <AppNavigator />
+   </LocationProvider>
+  
+  )
 };
 
 export default App;

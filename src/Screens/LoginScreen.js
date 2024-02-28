@@ -111,6 +111,14 @@ const LoginScreen = () => {
           const getresponse = await response.text();
           if(getresponse!='' &&getresponse!=null && getresponse != undefined){
             await AsyncStorage.setItem('isLoggedIn', 'true');
+
+            // needs to change and this are copied from signupscreen
+            
+            await AsyncStorage.setItem('EMAIL', email);
+          
+            await AsyncStorage.setItem('PASSWORD', password);
+            await AsyncStorage.setItem('AccountId', getresponse);
+            //******************************************** */
             setIsLoading(false);
             navigation.replace('HomeScreen')
           } else{
@@ -124,7 +132,7 @@ const LoginScreen = () => {
              const newToken = await fetchtoken();
              // console.log(newToken);
               if(newToken !='' && newToken !=undefined && newToken != null){
-              return saveData();
+              return login();
               }
               else{ Alert.alert('Unauthorized', 'Invalid Token'); setIsLoading(false); }
           } else{
