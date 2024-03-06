@@ -1,5 +1,5 @@
-import { View, Text } from 'react-native'
-import React, { useEffect, useState } from 'react'
+//import { View, Text } from 'react-native'
+import React, { useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 //import axios from 'axios';
 
@@ -36,10 +36,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
                 setToken(accessToken);
                 await AsyncStorage.setItem('TOKEN', accessToken);
                 console.log(accessToken);
+                return accessToken
             } else {
                 console.error('Error getting token:', responseData);
                 Alert.alert('An error occurred. Please try again later.');
                 setToken('');
+                return null
             }
             
 
@@ -48,6 +50,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
             console.error('Error getting token: ', error);
             Alert.alert('An error occurred. Please try again later.');
             setToken('');
+            return null
         }
     }
   

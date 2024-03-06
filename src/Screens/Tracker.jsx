@@ -80,10 +80,10 @@ const Tracker = () => {
             geodesic={false}
           />
           {/* <MapViewDirections
-    origin={{ latitude: location.latitude, longitude: location.longitude }}
-    destination={{ latitude: 30.929463, longitude: 74.612839 }}
-    apikey={'AIzaSyBCniUNc5X63vxNDe8RKIdef_5uWPquUk0'}
-  /> */}
+               origin={{ latitude: location.latitude, longitude: location.longitude }}
+               destination={{ latitude: 30.929463, longitude: 74.612839 }}
+                apikey={'AIzaSyBCniUNc5X63vxNDe8RKIdef_5uWPquUk0'}
+                 /> */}
         </MapView>
       )}
 

@@ -18,7 +18,7 @@ const Splash = () => {
       if(getLogin==='true' && getLogin!=null && getLogin != '' && getLogin != undefined){
         if(getEmail!=null && getEmail != '' && getEmail != undefined){
           if(getPassword!=null && getPassword != '' && getPassword != undefined){
-            navigation.replace('HomeScreen');
+            navigation.replace('Home');
           }
           else{
             navigation.replace('LoginScreen');

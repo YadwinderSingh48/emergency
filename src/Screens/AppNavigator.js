@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Button, StatusBar } from 'react-native'
 import React from 'react'
 import Splash from './Splash';
 // Navigation
@@ -15,14 +15,30 @@ import HomeScreen from './HomeScreen';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ProfileScreen from './ProfileScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Home from './Home'
+import Contacts from '../components/Contacts'
+import Recents from '../components/Recents';
+import ContactDetails from './ContactDetails';
 const stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const AppNavigator = () => {
   return (
+    
     <NavigationContainer>
+      {/* <StatusBar backgroundColor="" /> */}
       <stack.Navigator initialRouteName='Splash'>
         <stack.Screen
           name='Splash' component={Splash} options={{
+            headerShown: false
+          }}
+        ></stack.Screen>
+         <stack.Screen
+          name='Contacts' component={Contacts} options={{
+            headerShown: false
+          }}
+        ></stack.Screen>
+         <stack.Screen
+          name='ContactDetails' component={ContactDetails} options={{
             headerShown: false
           }}
         ></stack.Screen>
@@ -41,8 +57,13 @@ const AppNavigator = () => {
             headerShown: true
           }}
         ></stack.Screen>
+        <stack.Screen
+          name='Home' component={Home} options={{
+            headerShown: false
+          }}
+        ></stack.Screen>
 
-<stack.Screen
+{/* <stack.Screen
   name='Tracker' component={StackNavigator} options={{
     headerShown: false
   }}
@@ -51,7 +72,7 @@ const AppNavigator = () => {
           name='HomeScreen' component={TabNavigator} options={{
             headerShown: false
           }}
-        ></stack.Screen>
+        ></stack.Screen> */}
 
       </stack.Navigator>
 

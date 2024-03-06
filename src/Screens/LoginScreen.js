@@ -120,7 +120,7 @@ const LoginScreen = () => {
             await AsyncStorage.setItem('AccountId', getresponse);
             //******************************************** */
             setIsLoading(false);
-            navigation.replace('HomeScreen')
+            navigation.replace('Home')
           } else{
             Alert.alert('Invaid Credentials', 'Check your email and password and try again...');
             setIsLoading(false);

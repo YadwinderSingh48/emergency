@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Image , TouchableOpacity} from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
+
 const ProfileScreen = () => {
 const navigation = useNavigation();
 
@@ -12,7 +13,7 @@ const navigation = useNavigation();
       <View>
       <Text style={styles.nameText}>Welcome</Text>
       </View>
-      <TouchableOpacity style={{padding:15 , borderTopWidth:0.5,borderColor:'grey',borderBottomWidth:0.5,marginVertical:40,width:'85%', alignItems:'flex-start'}} onPress={()=>{navigation.navigate('Tracker')}}> 
+      <TouchableOpacity style={{padding:15 , borderTopWidth:0.5,borderColor:'grey',borderBottomWidth:0.5,marginVertical:40,width:'85%', alignItems:'flex-start'}} onPress={()=>{navigation.navigate('Home')}}> 
         <View >
           <Text style={{fontSize:20,color:'black'}}>Track Location</Text>
         </View>
