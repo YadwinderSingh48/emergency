@@ -14,6 +14,7 @@ const LoginScreen = () => {
   const [badDetails, setBadDetails] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
+  
   const validation = () => {
     if (email != '' && password != '') {
       setBadDetails(false);

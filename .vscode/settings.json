@@ -1,7 +1,7 @@
 {
     "editor.minimap.scale": 2,
     "editor.minimap.autohide": true,
-    "editor.minimap.enabled": true,
+    "editor.minimap.enabled": false,
     "editor.renderControlCharacters": true,
     "editor.minimap.renderCharacters": false,
     "editor.fontFamily": "Consolas, 'Courier New', monospace",

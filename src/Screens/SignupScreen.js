@@ -141,7 +141,7 @@ const SignupScreen = () => {
         Alert.alert('Success','Account Created Successfully! Please login to continue');
         navigation.goBack();
         } else{
-          Alert.alert('Email Error', 'Email is already registered. Try Another Email..')
+          Alert.alert('Email Error', 'Either Email or Phone is used by another Acoount. Pleasy try with a different Phone or Email')
           setIsLoading(false);
         }
       }

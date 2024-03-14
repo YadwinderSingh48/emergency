@@ -6,10 +6,8 @@ import { LocationProvider } from './components/LocationContext';
 const App = () => {
   return (
    <LocationProvider>
-
-      <AppNavigator />
-   </LocationProvider>
-  
+    <AppNavigator />
+</LocationProvider>
   )
 };
 

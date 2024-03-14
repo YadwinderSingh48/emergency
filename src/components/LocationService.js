@@ -7,11 +7,13 @@ export const getLocationPermissionAndWatch = (setLocationCallback) => {
     const watchId = Geolocation.watchPosition(
       position => {
         const { latitude, longitude } = position.coords;
-        console.log('Location updated:', { latitude, longitude });
+        //console.log('Location updated:', { latitude, longitude });
         setLocationCallback({ latitude, longitude });
       },
       error => console.log('Error getting location:', error),
-      { enableHighAccuracy: true, timeout: 1000, maximumAge: 100, distanceFilter: 1 }
+      { enableHighAccuracy: true, timeout: 1000, maximumAge: 100, distanceFilter: 1, useSignificantChanges: false,
+      showsBackgroundLocationIndicator: true // Show location indicator on iOS 
+    }
     );
 
     return () => {

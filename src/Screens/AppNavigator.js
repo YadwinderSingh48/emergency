@@ -19,6 +19,8 @@ import Home from './Home'
 import Contacts from '../components/Contacts'
 import Recents from '../components/Recents';
 import ContactDetails from './ContactDetails';
+import Test from './Test';
+import { LocationProvider } from './components/LocationContext'
 const stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const AppNavigator = () => {
@@ -37,8 +39,15 @@ const AppNavigator = () => {
             headerShown: false
           }}
         ></stack.Screen>
+        
          <stack.Screen
           name='ContactDetails' component={ContactDetails} options={{
+            headerShown: false
+          }}
+        ></stack.Screen>
+        
+         <stack.Screen
+          name='Test' component={Test} options={{
             headerShown: false
           }}
         ></stack.Screen>

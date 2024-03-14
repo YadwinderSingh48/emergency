@@ -6,6 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { request, PERMISSIONS } from 'react-native-permissions';
 import  Geolocation from 'react-native-geolocation-service';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { ref, set, onValue } from "firebase/database";
+import { db } from './firebaseconfig';
+
 
 const Contacts = () => {
   const navigation = useNavigation()
@@ -14,8 +17,49 @@ const Contacts = () => {
 
   useEffect(() => {
     getContacts();
+   // getLiveStatusDb();
   }, [])
   
+ 
+useEffect(() => {
+//  setInterval(() => {
+//   getLiveStatusDb();
+//  }, 3000);
+
+},[])
+
+  const getLiveStatusDb = (getCons) =>{
+   // console.log(getCons)
+        const starCountRef = ref(db, 'user');
+        onValue(starCountRef, (snapshot) => {
+            const data = snapshot.val();
+            // console.log(data["001F900001jKWhuIAG"].Status);
+            if(data !=null && data !=undefined && data !=''){
+            
+              //console.log(getCons)
+              const updatedContacts = getCons.map((c) =>{
+                  if(c.Account !=null && c.Account !=undefined && c.Account != ''){
+                    const idData = data[c.Account] ;
+                    if(idData !=null && idData !=undefined && idData){
+                      //console.log(idData.Status);
+                      return (
+                        { ...c, Status: idData.Status }
+                      )
+                    }
+                    else {
+                      return c ;
+                    }
+                  }
+                  else{
+                    return c ;
+                  }
+                }
+              );
+               setContacts(updatedContacts);
+             // return updatedContacts;
+            }
+    })
+  }
   
     // fetch new token
    const fetchtoken = async ()=>{
@@ -93,18 +137,41 @@ const Contacts = () => {
             setIsLoading(false);
             const formattedResponse = JSON.parse(getresponse);
            // console.log(formattedResponse);
-            const fetchContacts = formattedResponse.map(contact=>{
+            var fetchContacts = formattedResponse.map(contact=>{
               return {
                 'Name':contact.Name,
                 'Phone':contact.Phone,
-                'Status':contact.Description,
-                'Account':contact.Title,
-                'AccountId':contact.AccountId
+                'Status':contact?.Description,
+                'Account':contact?.Title,
+                'AccountId':contact?.AccountId
               }
             })
-            setContacts(fetchContacts);
-           // console.log(setContacts);
-            
+
+            // sort the contacts
+            const sortedContacts = fetchContacts.slice().sort((a, b) => {
+              const nameA = a.Name.toUpperCase(); // Ignore case during comparison
+              const nameB = b.Name.toUpperCase();
+              // check if status grey put them at last
+              if (a.Status === 'GREY' && b.Status !== 'GREY') {
+                return 1;
+              }
+              if (a.Status !== 'GREY' && b.Status === 'GREY') {
+                return -1;
+              }
+              // put other status items as alphabatical order
+              if (nameA < nameB) {
+                return -1; // a should come before b in the sorted order
+              }
+              if (nameA > nameB) {
+                return 1; // a should come after b in the sorted order
+              }
+              return 0; // a and b are equal in terms of sorting
+            });
+            setContacts(sortedContacts);
+           //console.log(fetchContacts);
+            setTimeout(()=>{
+              getLiveStatusDb(sortedContacts);
+            },4000);
             
           }
           else if(response.status === 401){
@@ -167,7 +234,7 @@ const NavigateToContact= (name,phone,status,account,accountId)=>{
                 {/* {!item.isSelected && (
                   <Image source={require('../assets/icons/checkmark.png')} style={styles.tick}></Image>
                 )} */}
-                <View style={[styles.tick, {borderRadius:15, backgroundColor:(item.Status).toLowerCase()}]}></View>
+                <View style={[styles.tick, {borderRadius:15, backgroundColor:(item?.Status).toLowerCase()}]}></View>
               </View>
             </TouchableOpacity>
         )

@@ -45,15 +45,28 @@ const Picker = () => {
       .then((allContacts) => {
         const contactsWithSelection = allContacts.map(item => ({ ...item, isSelected: false }));
 
-        setContacts(contactsWithSelection);
-        setIsLoading(false);
-       // console.log(contacts);
-      })
-      .catch((error) => {console.error('Error fetching contacts:', error)
-          setIsLoading(false);
-          Alert.alert('Permission Error', 'Error fetching contacts, check your permissions in settings or try again');
+        const sortedContacts = contactsWithSelection.slice().sort((a, b) => {
+          const nameA = a.displayName?.toUpperCase(); // Ignore case during comparison
+          const nameB = b.displayName?.toUpperCase();
+          // put contact items as alphabatical order
+          if (nameA < nameB) {
+            return -1; // a should come before b in the sorted order
+          }
+          if (nameA > nameB) {
+            return 1; // a should come after b in the sorted order
+          }
+          return 0; // a and b are equal in terms of sorting
         });
-    
+        setContacts(sortedContacts);
+        setIsLoading(false);
+        // console.log(contacts);
+      })
+      .catch((error) => {
+        console.error('Error fetching contacts:', error)
+        setIsLoading(false);
+        Alert.alert('Permission Error', 'Error fetching contacts, check your permissions in settings or try again');
+      });
+
   };
   // function for handle click on the list
   const handleClick = (getNumber) => {
@@ -73,114 +86,114 @@ const Picker = () => {
       title: `(${selectedContacts.length}) Selected`,
     });
   }, [selectedContacts]);
-  
+
   // Get new access token on Expiration
-  const fetchtoken = async ()=>{
+  const fetchtoken = async () => {
     try {
       const authUrl = `https://login.salesforce.com/services/oauth2/token?`;
       const clientId = '3MVG9Kr5_mB04D14D.hLl3Q0oFhcPx_bIxRBctJfZhezQkjGcX4yIPdZB4r9GI_ePGxFtIAnNBHhJKTJ_7lNR';
       const clientSecret = 'AD0520E2EBFE1C8E1133666836BAF74D699A55A62E772FEAB7C1121672CFBAF5';
 
       const authData = {
-          grant_type: 'password',
-          client_id: clientId,
-          client_secret: clientSecret,
-          username: 'reactnativeproject@newapp.com',
-          password: 'ReactApp@21MPHIQQiMSqoz1UmLwrSeT1q69',
+        grant_type: 'password',
+        client_id: clientId,
+        client_secret: clientSecret,
+        username: 'reactnativeproject@newapp.com',
+        password: 'ReactApp@21MPHIQQiMSqoz1UmLwrSeT1q69',
       };
       const formData = Object.keys(authData)
-      .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(authData[key]))
-      .join('&');
+        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(authData[key]))
+        .join('&');
 
       const response = await fetch(authUrl, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: formData,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData,
       });
       const responseData = await response.json();
       if (response.ok) {
-          const accessToken = responseData.access_token;
-         console.log(response);
-         console.log(accessToken);
-         console.log(responseData);
-          await AsyncStorage.setItem('TOKEN', accessToken);
-          return accessToken;
+        const accessToken = responseData.access_token;
+        console.log(response);
+        console.log(accessToken);
+        console.log(responseData);
+        await AsyncStorage.setItem('TOKEN', accessToken);
+        return accessToken;
       } else {
-          console.error('Error creating Salesforce account:', responseData);
-          await AsyncStorage.setItem('TOKEN', '');
-          Alert.alert('An error occurred. Please try again later.');
-         return '';
+        console.error('Error creating Salesforce account:', responseData);
+        await AsyncStorage.setItem('TOKEN', '');
+        Alert.alert('An error occurred. Please try again later.');
+        return '';
       }
-  }
-  catch (error) {
+    }
+    catch (error) {
       console.error('Error creating Salesforce account:', error);
       await AsyncStorage.setItem('TOKEN', '');
       Alert.alert('An error occurred. Please try again later.');
       return '';
-  }
-  
+    }
+
   }
   // Create selected contacts
-    const createContacts = async () =>{
-      if(selectedContacts !=''){
-        setIsLoading(true);
-        const accId = await AsyncStorage.getItem('AccountId');
-        const cons = selectedContacts.map(contact=>{
-              return ({
-                "attributes": { "type":"Contact"},
-                "LastName": contact.displayName,
-                "phone": contact.phoneNumbers[0]?.number,
-                "accountId": JSON.parse(accId)
-              })
-    })  
-          const formattedData = JSON.stringify({"listobj":cons});
-        console.log(formattedData);
-       // POST api 
-       try {
+  const createContacts = async () => {
+    if (selectedContacts != '') {
+      setIsLoading(true);
+      const accId = await AsyncStorage.getItem('AccountId');
+      const cons = selectedContacts.map(contact => {
+        return ({
+          "attributes": { "type": "Contact" },
+          "LastName": contact.displayName,
+          "phone": contact.phoneNumbers[0]?.number,
+          "accountId": JSON.parse(accId)
+        })
+      })
+      const formattedData = JSON.stringify({ "listobj": cons });
+      console.log(formattedData);
+      // POST api 
+      try {
         //get the saved token 
         const authToken = await AsyncStorage.getItem('TOKEN');
         const apiUrl = 'https://react-dev-ed.develop.my.salesforce.com/services/apexrest/Contactt'
         const headers = {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}` 
+          'Authorization': `Bearer ${authToken}`
         };
         const data = formattedData;
-         const response = await fetch(apiUrl,{
-            method:'POST',
-            headers: headers,
-            body: data
-          });
-          if(response.ok){
-            const getresponse = await response.text();
-            console.log(getresponse);
-            setIsLoading(false);
-          Alert.alert('Success','Contacts Created Successfully!');
-          navigation.navigate('HomeScreen','refresh');
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: headers,
+          body: data
+        });
+        if (response.ok) {
+          const getresponse = await response.text();
+          console.log(getresponse);
+          setIsLoading(false);
+          Alert.alert('Success', 'Contacts Created Successfully!');
+          navigation.navigate('Home', 'refresh');
+        }
+        else if (response.status === 401) {
+          console.log('here')
+          const newToken = await fetchtoken();
+          console.log(newToken);
+          if (newToken != '' && newToken != undefined && newToken != null) {
+            return createContacts();
           }
-          else if(response.status === 401){
-            console.log('here')
-               const newToken = await fetchtoken();
-                console.log(newToken);
-                if(newToken !='' && newToken !=undefined && newToken != null){
-                return createContacts();
-                }
-                else{ Alert.alert('Unauthorized', 'Invalid Token'); setIsLoading(false); }
-            } else{
-              Alert.alert('Error', 'Something Went Wrong. Please try later...');
-              setIsLoading(false);
-            }
-  
+          else { Alert.alert('Unauthorized', 'Invalid Token'); setIsLoading(false); }
+        } else {
+          Alert.alert('Error', 'Something Went Wrong. Please try later...');
+          setIsLoading(false);
+        }
+
       }
       catch (error) {
         console.log(error)
-          Alert.alert('Catch Error', 'Something Went Wrong. Check Your Details and try again');
-          setIsLoading(false);
+        Alert.alert('Catch Error', 'Something Went Wrong. Check Your Details and try again');
+        setIsLoading(false);
       }
-      
-      } else{Alert.alert("Invalid Selection","Please select contacts to continue") } 
-    }
+
+    } else { Alert.alert("Invalid Selection", "Please select contacts to continue") }
+  }
 
 
 
@@ -211,7 +224,7 @@ const Picker = () => {
       ></FlatList>
       <View style={styles.bottomButtonContainer}>
         <Button title='Done' style={styles.btn} onPress={() => { createContacts(); }} />
-       
+
         {/* <Button title='Done' style={styles.btn} onPress={() => { navigation.navigate('HomeScreen', { selectedContacts }); }} /> */}
       </View>
       {isLoading && (

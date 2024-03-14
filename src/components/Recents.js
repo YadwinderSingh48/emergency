@@ -22,9 +22,9 @@ const styles = StyleSheet.create({
     mainContainer: {
         borderWidth: 1,
         marginHorizontal: 10,
-        marginVertical: 5,
+        //marginVertical: 5,
         borderRadius: 10,
-        height: '100%'
+        height:'100%'
     },
     headers: {
         flexDirection: 'row',
