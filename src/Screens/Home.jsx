@@ -7,7 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlatList } from 'react-native-gesture-handler';
 // import { useLocation } from '../components/LocationContext';
-import { ref, set } from "firebase/database";
+import { onValue, ref, set } from "firebase/database";
 import { db } from '../components/firebaseconfig';
 import GetToken from '../components/GetToken';
 import BackgroundService from 'react-native-background-actions';
@@ -46,6 +46,7 @@ const Home = () => {
   // const { location } = useLocation();
   const [accName, setAccName] = useState('')
   const [wId, setWid] = useState(null);
+  const [notifications , setNotifications] = useState([]);
   const startservice = async () => {
     await BackgroundService.start(veryIntensiveTask, options);
     await BackgroundService.updateNotification({ taskDesc: 'Location is updating ' }); // Only Android, iOS will ignore this call
@@ -73,15 +74,77 @@ const Home = () => {
     var token = await GetToken()
     console.log(token);
   }
+  const sendEmail = async(priority,link)=>{
+    try{
+    const authToken = await AsyncStorage.getItem('TOKEN');
+    const accountId = await AsyncStorage.getItem('AccountId');
+    const apiUrl = 'https://react-dev-ed.develop.my.salesforce.com/services/apexrest/location'
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${authToken}` 
+    };
+    const accId = JSON.parse(accountId);
+    const data = {
+        "priority": priority,
+        "accId": accId,
+        "link": link
+      }
+     const response = await fetch(apiUrl,{
+        method:'POST',
+        headers: headers,
+        body: JSON.stringify(data)
+      });
+      // const getresponse = await response.text();
+      // console.log(getresponse);
+      if(response.ok){
+        const getresponse = await response.text();
+        console.log(getresponse);
+      if(getresponse !=null && getresponse != '' && getresponse != undefined){
+     
+      setIsLoading(false);
+      setModalVisible(false);
+      if(priority == 'RED'){
+
+        Alert.alert('Success','Location Sent Succesfully');
+      }
+      } else{
+        Alert.alert('Error', 'Error Occured')
+        setIsLoading(false);
+        setModalVisible(false);
+      }
+    }
+      else if(response.status === 401){
+        console.log('here')
+           const newToken = await fetchtoken();
+           // console.log(newToken);
+            if(newToken !='' && newToken !=undefined && newToken != null){
+            return sendEmail();
+            }
+            else{ Alert.alert('Unauthorized', 'Invalid Token'); setIsLoading(false); setModalVisible(false); }
+        } else{
+          Alert.alert('Error', 'Something Went Wrong. Check Your Details and try again');
+          setIsLoading(false);
+          setModalVisible(false);
+        }
+
+  }
+  catch (error) {
+    console.log(error)
+      Alert.alert('Catch Error', 'Something Went Wrong. Check Your Details and try again');
+      setIsLoading(false);
+  }
+  }
   useEffect(() => {
     //tokn();
     accDetails();
+    getCons(false);
   }, [])
 
   const updateLiveStatedb = (state, accId) => {
 
     set(ref(db, 'user' + '/' + accId), {
-      Status: state
+      Status: state,
+      TimeStamp: Date.now()
 
     })
       .then(() => {
@@ -256,7 +319,7 @@ const Home = () => {
   }
 
   // Get the contacts associated with account
-  const getCons = async () => {
+  const getCons = async (show) => {
     setIsLoading(true);
     const accountId = await AsyncStorage.getItem('AccountId');
     try {
@@ -287,20 +350,25 @@ const Home = () => {
           return {
             'Name': contact.Name,
             'Phone': contact.Phone,
-            'isSelected': false
+            'isSelected': false,
+            'Status':contact?.Description,
+            'Account':contact?.Title,
+            'AccountId':contact?.AccountId
           }
         })
         setContacts(fetchContacts);
         // console.log(setContacts);
-        setModalVisible(true);
-
+        getLiveStatusDb(fetchContacts);
+        if(show){
+          setModalVisible(true);
+        }
       }
       else if (response.status === 401) {
         console.log('here')
         const newToken = await fetchtoken();
         //   console.log(newToken);
         if (newToken != '' && newToken != undefined && newToken != null) {
-          return getCons();
+          return getCons(show);
         }
         else { Alert.alert('Unauthorized', 'Invalid Token'); setIsLoading(false); }
       } else {
@@ -316,6 +384,58 @@ const Home = () => {
     }
 
   }
+
+  // Notification Handler
+  const getLiveStatusDb = (getCons) =>{
+    // console.log(getCons)
+         const starCountRef = ref(db, 'user');
+         onValue(starCountRef, (snapshot) => {
+             const data = snapshot.val();
+             if(data !=null && data !=undefined && data !=''){
+            //   console.log(getCons)
+               const updatedContacts = getCons.map((c) =>{
+                   if(c.Account !=null && c.Account !=undefined && c.Account != ''){
+                     const idData = data[c.Account] ;
+                    // console.log(c.Account, idData);
+
+                     if(idData !== undefined && idData !== null){
+                      if(idData.TimeStamp !== null && idData.TimeStamp !== undefined ){
+
+                      
+                      // console.log(idData.TimeStamp);
+                       const d2 = new Date(idData.TimeStamp);
+                       const d = Date.now();
+                       const d1 = new Date(d);
+                       let minDiff = (d1-d2)/1000;
+                       minDiff /= 60;
+                       minDiff = Math.round(minDiff);
+                       if(minDiff<=30){
+                         return (
+                           { ...c, Status: idData.Status, TimeStamp:minDiff }
+                         )
+                        } else{
+                          return c;
+                        }
+                        
+
+                      }
+
+                     }else {
+                      return c
+                    }
+                     
+                   }
+                   
+                 }
+               );
+              //  console.log(updatedContacts);
+               let filtered = updatedContacts.filter(contact => contact && contact.TimeStamp !== undefined);
+               filtered = filtered.sort((a, b) => a.TimeStamp - b.TimeStamp);
+               setNotifications(filtered);
+              // return updatedContacts;
+             }
+     })
+   }
 
   // Handle Selecteion and Unselection of contacts
   const handleClick = (getNumber) => {
@@ -373,7 +493,7 @@ const Home = () => {
               updateLiveStatedb(state, accId);
 
               redZone(JSON.parse(getresponse), state);
-
+             // sendEmail(state,"https://example.com")
               Alert.alert('Success', 'Status Updated Successfully.');
             }
             else {
@@ -440,7 +560,7 @@ const Home = () => {
       } catch (err) {
         console.warn(err);
       }
-      await sleep(delay);
+    //  await sleep(delay);
 
 
     };
@@ -520,7 +640,7 @@ if(state === 'RED'){
         </View>
         <View style={styles.donutContainer}>
           <View style={[styles.circle, { borderColor: status.toLowerCase() }]}>
-            <TouchableOpacity style={styles.status} onPress={() => getCons()}>
+            <TouchableOpacity style={styles.status} onPress={() => getCons(true)}>
               <Text style={[styles.heading, { color: status.toLowerCase() }]}>
                 {status}
               </Text>
@@ -543,7 +663,7 @@ if(state === 'RED'){
   const notifycomp = () => {
     return (
       <View style={{ marginTop: 20, height:400 }} >
-        <Recents />
+          <Recents notifications={notifications} reload={()=>getCons(false)}/>
       </View>
     )
   }

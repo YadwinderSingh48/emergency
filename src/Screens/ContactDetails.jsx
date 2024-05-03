@@ -5,16 +5,16 @@ import { ref, set, onValue } from "firebase/database";
 import { db } from '../components/firebaseconfig';
 import { useLocation } from '../components/LocationContext';
 import MapView, { Marker, PROVIDER_GOOGLE, Polyline } from 'react-native-maps';
-
+import { useNavigation } from '@react-navigation/native';
 
 const ContactDetails = ({ route }) => {
     const [conLat, setConLat] = useState(0);
     const [conLong, setConLong] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-
+    const navigation = useNavigation();
     const { contactData } = route.params;
     const { location } = useLocation();
-    console.log(contactData);
+   // console.log(contactData);
 
     useEffect(() => {
         getLocation();
@@ -66,7 +66,7 @@ const ContactDetails = ({ route }) => {
 
             return (
                 <View>
-                    <TouchableOpacity style={{width:'80%',height:50,borderWidth:1,borderRadius:10,marginTop:10,justifyContent:'center',backgroundColor:"#dfdfdf"}}>
+                    <TouchableOpacity onPress={()=>navigation.navigate("Chat",contactData)} style={{width:'80%',height:50,borderWidth:1,borderRadius:10,marginTop:10,justifyContent:'center',backgroundColor:"#dfdfdf"}}>
                         <Image source={require('../assets/icons/message.png')} style={{height:34,width:34,alignSelf:'center'}} />
                     </TouchableOpacity>
                 <MapView
@@ -115,7 +115,7 @@ const ContactDetails = ({ route }) => {
             return (
                 <View style={{ height: 300, alignItems: 'center', top: 60 }}>
                     <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>{contactData.Name} Have not Shared anything</Text>
-                    <TouchableOpacity style={{width:'80%',height:50,borderWidth:1,borderRadius:10,marginTop:10,justifyContent:'center',backgroundColor:"#dfdfdf"}}>
+                    <TouchableOpacity onPress={()=>navigation.navigate("Chat",contactData)} style={{width:'80%',height:50,borderWidth:1,borderRadius:10,marginTop:10,justifyContent:'center',backgroundColor:"#dfdfdf",alignSelf:'center',alignItems:'center'}}>
                         <Image source={require('../assets/icons/message.png')} style={{height:34,width:34,alignSelf:'center'}} />
                     </TouchableOpacity>
                 </View>
@@ -161,6 +161,7 @@ const ContactDetails = ({ route }) => {
                         </TouchableOpacity>
                     </View>
                 </View>
+                
             </View>
             <View style={{ height: '80%' }}>
                 {checkRedndering()}

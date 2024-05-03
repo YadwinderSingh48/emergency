@@ -1,5 +1,5 @@
 import { Button, StyleSheet, Text, View, TouchableOpacity, Image, Alert , ActivityIndicator} from 'react-native'
-import { React, useEffect, useState } from 'react'
+import { React, memo, useEffect, useState, useCallback } from 'react'
 import { FlatList } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -14,19 +14,16 @@ const Contacts = () => {
   const navigation = useNavigation()
     const [contacts, setContacts] = useState([]);
   const [isLoading,setIsLoading] = useState(false);
-
+let count = 1
   useEffect(() => {
-    getContacts();
+    if(count == 1){
+      getContacts();
+    }
+count++ ;
    // getLiveStatusDb();
   }, [])
   
  
-useEffect(() => {
-//  setInterval(() => {
-//   getLiveStatusDb();
-//  }, 3000);
-
-},[])
 
   const getLiveStatusDb = (getCons) =>{
    // console.log(getCons)
@@ -111,7 +108,7 @@ useEffect(() => {
   }
 
   // Get the contacts associated with account
-  const getContacts = async () =>{
+  const getContacts = useCallback( async () =>{
     setIsLoading(true);
       const accountId = await AsyncStorage.getItem('AccountId');
       try {
@@ -194,7 +191,7 @@ useEffect(() => {
           setIsLoading(false);
       }
 
-  }
+  },[]);
 // navigate to the detail contact screen
 const NavigateToContact= (name,phone,status,account,accountId)=>{
     let contactData = {
@@ -250,7 +247,7 @@ const NavigateToContact= (name,phone,status,account,accountId)=>{
   )
 }
 
-export default Contacts
+export default memo(Contacts)
 
 const styles = StyleSheet.create({
   mainContainer:{

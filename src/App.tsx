@@ -2,12 +2,20 @@
 import React from 'react';
 import AppNavigator, { TabNavigator } from './Screens/AppNavigator';
 import { NavigationContainer } from '@react-navigation/native';
-import { LocationProvider } from './components/LocationContext'; 
+import { LocationProvider } from './components/LocationContext';
+import { SafeAreaView } from 'react-native';
+
 const App = () => {
   return (
-   <LocationProvider>
-    <AppNavigator />
-</LocationProvider>
+
+    <LocationProvider>
+      <SafeAreaView style={{flex:1}}>
+        <AppNavigator />
+      </SafeAreaView>
+
+    </LocationProvider>
+
+
   )
 };
 

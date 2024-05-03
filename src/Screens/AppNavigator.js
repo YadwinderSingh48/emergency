@@ -20,6 +20,7 @@ import Contacts from '../components/Contacts'
 import Recents from '../components/Recents';
 import ContactDetails from './ContactDetails';
 import Test from './Test';
+import Chat from './Chat';
 import { LocationProvider } from './components/LocationContext'
 const stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,7 +32,7 @@ const AppNavigator = () => {
       <stack.Navigator initialRouteName='Splash'>
         <stack.Screen
           name='Splash' component={Splash} options={{
-            headerShown: false
+            headerShown: false,
           }}
         ></stack.Screen>
          <stack.Screen
@@ -49,6 +50,11 @@ const AppNavigator = () => {
          <stack.Screen
           name='Test' component={Test} options={{
             headerShown: false
+          }}
+        ></stack.Screen>
+         <stack.Screen
+          name='Chat' component={Chat} options={{
+            headerShown: true,
           }}
         ></stack.Screen>
         <stack.Screen
