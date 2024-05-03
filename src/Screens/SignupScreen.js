@@ -30,7 +30,7 @@ const SignupScreen = () => {
           client_id: clientId,
           client_secret: clientSecret,
           username: 'reactnativeproject@newapp.com',
-          password: 'ReactApp@21MPHIQQiMSqoz1UmLwrSeT1q69',
+          password: 'Yaad48@appLjjKSLfXvDCFCdDPbJVwl5pg',
       };
       const formData = Object.keys(authData)
       .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(authData[key]))
